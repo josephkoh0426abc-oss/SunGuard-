@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SunGuard ☀️</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0800;
+    --bg2: #1a0f00;
+    --bg3: #251500;
+    --orange: #FF8C00;
+    --orange2: #FFA500;
+    --yellow: #FFD700;
+    --red: #FF4444;
+    --green: #4CAF50;
+    --text: #fff;
+    --text2: #bbb;
+    --text3: #666;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,140,0,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 48px 16px 12px;
+    position: relative;
+  }
+  .app-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .app-date { font-size: 13px; color: var(--orange); margin-top: 2px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    margin: 10px 16px;
+    background: var(--bg2);
+    border-radius: 14px;
+    padding: 4px;
+    gap: 2px;
+    position: sticky;
+    top: 8px;
+    z-index: 100;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--orange);
+    color: #fff;
+  }
+
+  /* CONTENT */
+  .content { padding: 0 16px 60px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--bg3);
+  }
+  .card.highlighted { border-color: var(--orange); }
+
+  /* UV CARD */
+  .uv-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .uv-emoji { font-size: 36px; }
+  .uv-value { font-size: 26px; font-weight: 900; }
+  .uv-label { font-size: 13px; font-weight: 700; margin-top: 2px; }
+  .uv-rec { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .streak-badge {
+    margin-left: auto;
+    background: var(--bg3);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--orange);
+    white-space: nowrap;
+  }
+
+  /* SKIN CARD */
+  .skin-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .skin-card:hover { opacity: 0.8; }
+  .skin-emoji { font-size: 28px; }
+  .skin-title { font-size: 14px; font-weight: 700; }
+  .skin-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .skin-arrow { margin-left: auto; font-size: 20px; color: var(--orange); }
+
+  /* AI MINI */
+  .ai-mini {
+    background: var(--bg2);
+    border: 1px solid var(--bg3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #ddd;
+    line-height: 1.6;
+    display: none;
+  }
+  .ai-mini.visible { display: block; }
+
+  /* STATUS BOX */
+  .status-box {
+    background: rgba(255,140,0,0.12);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+  .status-box.warning { background: rgba(220,50,50,0.8); }
+
+  /* APPLY BUTTON */
+  .btn-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .ripple-ring {
+    position: absolute;
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: var(--orange);
+    opacity: 0;
+    pointer-events: none;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .ripple-ring.animate {
+    animation: rippleOut 0.6s ease-out forwards;
+  }
+  @keyframes rippleOut {
+    0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); }
+  }
+  .apply-btn {
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: var(--bg2);
+    border: 2px solid var(--orange);
+    font-size: 52px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(255,140,0,0.3);
+    transition: transform 0.1s;
+    position: relative;
+    z-index: 1;
+  }
+  .apply-btn:active { transform: scale(0.88); }
+
+  /* COUNT */
+  .count-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+  .count-number { font-size: 60px; font-weight: 900; line-height: 1; }
+  .count-label { font-size: 16px; color: var(--orange); margin-bottom: 8px; }
+  .progress-bg {
+    width: 100%;
+    height: 8px;
+    background: var(--bg3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--orange);
+    transition: width 0.5s ease;
+  }
+  .goal-text {
+    text-align: center;
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  /* DAILY REPORT BTN */
+  .daily-report-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--orange), #FF6600);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    margin: 8px 0 10px;
+    transition: opacity 0.2s;
+  }
+  .daily-report-btn:hover { opacity: 0.9; }
+  .daily-report-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .daily-report-box {
+    background: var(--bg2);
+    border: 1px solid var(--orange);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+    display: none;
+  }
+  .daily-report-box.visible { display: block; }
+
+  .total-box {
+    background: var(--bg2);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 8px;
+  }
+  .total-num { color: var(--orange); font-weight: 900; }
+  .hint { text-align: center; font-size: 11px; color: var(--text3); margin-top: 12px; }
+
+  /* UV FORECAST */
+  .section-title {
+    font-size: 18px;
+    font-weight: 900;
+    margin: 8px 0 16px;
+  }
+  .forecast-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    background: var(--bg2);
+    border-radius: 16px;
+    padding: 16px 12px;
+    margin-bottom: 16px;
+    height: 160px;
+    gap: 4px;
+  }
+  .forecast-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .forecast-uv-val { font-size: 9px; color: var(--orange); margin-bottom: 2px; }
+  .forecast-bar-bg {
+    width: 20px;
+    height: 100px;
+    background: var(--bg3);
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .forecast-bar-fill { width: 100%; border-radius: 4px; transition: height 0.5s; }
+  .forecast-hour { font-size: 9px; color: var(--text3); margin-top: 4px; }
+  .forecast-hour.now { color: var(--orange); font-weight: 900; }
+
+  .warning-time-box {
+    background: #1a0000;
+    border: 1px solid var(--red);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .warning-time-title { color: var(--red); font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .warning-time-item { font-size: 13px; margin-bottom: 4px; }
+  .warning-time-advice { font-size: 12px; color: var(--text2); margin-top: 8px; }
+
+  .uv-rec-card {
+    background: var(--bg2);
+    border: 1px solid var(--orange);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .uv-rec-title { color: var(--orange); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .uv-rec-spf { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+  .uv-rec-desc { font-size: 13px; color: var(--text2); }
+
+  /* CHART */
+  .chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    background: var(--bg2);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    height: 180px;
+    gap: 4px;
+  }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+  .bar-count { font-size: 11px; color: var(--orange); margin-bottom: 4px; }
+  .bar-bg { width: 28px; height: 120px; background: var(--bg3); border-radius: 6px; display: flex; align-items: flex-end; overflow: hidden; }
+  .bar-fill { width: 100%; border-radius: 6px; transition: height 0.5s; }
+  .bar-label { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .bar-label.today { color: var(--orange); font-weight: 900; }
+
+  .stats-row { display: flex; gap: 10px; }
+  .stat-box { flex: 1; background: var(--bg2); border-radius: 12px; padding: 14px; text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 900; color: var(--orange); }
+  .stat-label { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* BADGES */
+  .badge-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  .badge-card {
+    width: calc(50% - 6px);
+    background: var(--bg2);
+    border: 1px solid var(--orange);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+  }
+  .badge-card.locked { border-color: var(--bg3); opacity: 0.5; }
+  .badge-emoji { font-size: 36px; margin-bottom: 8px; display: block; }
+  .badge-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .badge-desc { font-size: 10px; color: var(--orange); line-height: 1.4; }
+  .badge-card.locked .badge-desc { color: var(--text3); }
+  .badge-lock { font-size: 14px; margin-top: 6px; display: block; }
+
+  /* AI */
+  .ai-desc { font-size: 13px; color: var(--text3); margin-bottom: 14px; }
+  .ai-data-box { background: var(--bg2); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+  .ai-data-row {
+    display: flex;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--bg3);
+    font-size: 13px;
+  }
+  .ai-data-row:last-child { border-bottom: none; }
+  .ai-data-day { flex: 1; color: var(--text2); }
+  .ai-data-day.today { color: var(--orange); }
+  .ai-data-count { flex: 1; text-align: center; }
+  .ai-data-uv { flex: 1; text-align: right; color: var(--orange); }
+  .ai-btn {
+    width: 100%;
+    background: var(--orange);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: opacity 0.2s;
+  }
+  .ai-btn:hover { opacity: 0.9; }
+  .ai-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .ai-report-box {
+    background: var(--bg2);
+    border: 1px solid var(--orange);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    display: none;
+  }
+  .ai-report-box.visible { display: block; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.visible { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: var(--bg2);
+    border: 1px solid var(--orange);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+    width: 90%;
+    max-width: 360px;
+    transform: scale(0.9);
+    transition: transform 0.3s;
+  }
+  .modal-overlay.visible .modal-box { transform: scale(1); }
+  .modal-emoji { font-size: 56px; margin-bottom: 10px; display: block; }
+  .modal-title { font-size: 20px; font-weight: 900; color: var(--orange); margin-bottom: 6px; }
+  .modal-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .modal-desc { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
+  .modal-btn {
+    background: var(--orange);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 32px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  /* SKIN MODAL */
+  .skin-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    border: none;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .skin-option:hover { background: #3a2500; }
+  .skin-option-emoji { font-size: 24px; }
+  .skin-option-label { font-size: 14px; font-weight: 700; color: #fff; font-family: 'Noto Sans KR', sans-serif; }
+  .skin-option-desc { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: 'Noto Sans KR', sans-serif; }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="app-title">☀️ SUNGUARD</div>
+  <div class="app-date" id="today-date"></div>
+</div>
+
+<!-- 탭 -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('home')">홈</button>
+  <button class="tab-btn" onclick="switchTab('uv')">UV예보</button>
+  <button class="tab-btn" onclick="switchTab('stats')">통계</button>
+  <button class="tab-btn" onclick="switchTab('badges')">뱃지</button>
+  <button class="tab-btn" onclick="switchTab('ai')">AI분석</button>
+</div>
+
+<!-- 콘텐츠 -->
+<div class="content">
+
+  <!-- 홈 탭 -->
+  <div class="tab-panel active" id="panel-home">
+    <!-- UV 카드 -->
+    <div class="card highlighted">
+      <div class="uv-card">
+        <span class="uv-emoji" id="uv-emoji">⏳</span>
+        <div style="flex:1">
+          <div class="uv-value" id="uv-value">로딩 중...</div>
+          <div class="uv-label" id="uv-label"></div>
+          <div class="uv-rec" id="uv-rec-short"></div>
+        </div>
+        <span class="streak-badge" id="streak-badge" style="display:none"></span>
+      </div>
+    </div>
+
+    <!-- 피부 타입 카드 -->
+    <div class="card" onclick="openSkinModal()" style="cursor:pointer">
+      <div class="skin-card">
+        <span class="skin-emoji" id="skin-emoji">👤</span>
+        <div>
+          <div class="skin-title" id="skin-title">피부 타입을 설정하세요</div>
+          <div class="skin-sub" id="skin-sub">맞춤 선크림 추천을 받아보세요!</div>
+        </div>
+        <span class="skin-arrow">›</span>
+      </div>
+    </div>
+
+    <!-- AI 피부 추천 -->
+    <div class="ai-mini" id="skin-recommend"></div>
+
+    <!-- 상태 박스 -->
+    <div class="status-box" id="status-box">선크림을 발랐다면 버튼을 눌러주세요!</div>
+
+    <!-- 선크림 버튼 -->
+    <div class="btn-wrapper">
+      <div class="ripple-ring" id="ripple"></div>
+      <button class="apply-btn" onclick="handleApply()">🧴</button>
+    </div>
+
+    <!-- 카운트 -->
+    <div class="count-row">
+      <span class="count-number" id="count-number">0</span>
+      <span class="count-label" id="count-label">/ 3회 목표</span>
+    </div>
+    <div class="progress-bg">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="goal-text" id="goal-text" style="display:none">🎉 오늘 목표 달성!</div>
+
+    <!-- AI 데일리 리포트 -->
+    <button class="daily-report-btn" id="daily-report-btn" onclick="fetchDailyReport()">🤖 오늘 하루 AI 리포트</button>
+    <div class="daily-report-box" id="daily-report-box"></div>
+
+    <div class="total-box">누적 도포 횟수: <span class="total-num" id="total-count">0</span>회</div>
+    <div class="hint">선크림을 바른 후 버튼을 눌러주세요</div>
+  </div>
+
+  <!-- UV 예보 탭 -->
+  <div class="tab-panel" id="panel-uv">
+    <div class="section-title">⏰ 오늘 시간대별 UV</div>
+    <div class="forecast-chart" id="forecast-chart">
+      <div style="color:var(--text3);font-size:13px;width:100%;text-align:center">로딩 중...</div>
+    </div>
+    <div id="warning-time-box" style="display:none" class="warning-time-box">
+      <div class="warning-time-title">⚠️ 오늘 UV 위험 시간대</div>
+      <div id="warning-time-list"></div>
+      <div class="warning-time-advice">이 시간대엔 꼭 선크림을 재도포하세요! 🧴</div>
+    </div>
+    <div class="uv-rec-card">
+      <div class="uv-rec-title">☀️ 오늘 권장 선크림</div>
+      <div class="uv-rec-spf" id="uv-rec-spf">-</div>
+      <div class="uv-rec-desc" id="uv-rec-desc">UV 데이터를 불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 통계 탭 -->
+  <div class="tab-panel" id="panel-stats">
+    <div class="section-title">📊 주간 도포 현황</div>
+    <div class="chart-container" id="weekly-chart"></div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num" id="stat-achieved">0</div>
+        <div class="stat-label">목표 달성일</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-avg">0</div>
+        <div class="stat-label">일평균 도포</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-streak">0</div>
+        <div class="stat-label">연속 달성일</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 뱃지 탭 -->
+  <div class="tab-panel" id="panel-badges">
+    <div class="section-title">🏆 뱃지 컬렉션 <span id="badge-count"></span></div>
+    <div class="badge-grid" id="badge-grid"></div>
+  </div>
+
+  <!-- AI 분석 탭 -->
+  <div class="tab-panel" id="panel-ai">
+    <div class="section-title">🤖 AI 주간 패턴 분석</div>
+    <div class="ai-desc">최근 7일간의 도포 기록을 AI가 분석해드려요</div>
+    <div class="ai-data-box" id="ai-data-box"></div>
+    <button class="ai-btn" id="ai-btn" onclick="fetchWeeklyReport()">주간 AI 분석 시작 🤖</button>
+    <div class="ai-report-box" id="ai-report-box"></div>
+  </div>
+
+</div>
+
+<!-- 뱃지 획득 모달 -->
+<div class="modal-overlay" id="badge-modal">
+  <div class="modal-box">
+    <span class="modal-emoji" id="badge-modal-emoji"></span>
+    <div class="modal-title">뱃지 획득!</div>
+    <div class="modal-name" id="badge-modal-name"></div>
+    <div class="modal-desc" id="badge-modal-desc"></div>
+    <button class="modal-btn" onclick="closeBadgeModal()">확인</button>
+  </div>
+</div>
+
+<!-- 피부 타입 모달 -->
+<div class="modal-overlay" id="skin-modal">
+  <div class="modal-box" style="width:90%;max-width:400px">
+    <div class="modal-title">피부 타입 선택</div>
+    <div class="modal-desc">내 피부 타입을 선택하면 맞춤 선크림을 추천해드려요!</div>
+    <button class="skin-option" onclick="selectSkin('oily','지성','💧')">
+      <span class="skin-option-emoji">💧</span>
+      <div><div class="skin-option-label">지성</div><div class="skin-option-desc">피지 분비가 많은 피부</div></div>
+    </button>
+    <button class="skin-option" onclick="selectSkin('dry','건성','🌵')">
+      <span class="skin-option-emoji">🌵</span>
+      <div><div class="skin-option-label">건성</div><div class="skin-option-desc">수분이 부족한 피부</div></div>
+    </button>
+    <button class="skin-option" onclick="selectSkin('combo','복합성','⚖️')">
+      <span class="skin-option-emoji">⚖️</span>
+      <div><div class="skin-option-label">복합성</div><div class="skin-option-desc">부위별로 다른 피부</div></div>
+    </button>
+    <button class="skin-option" onclick="selectSkin('sensitive','민감성','🌸')">
+      <span class="skin-option-emoji">🌸</span>
+      <div><div class="skin-option-label">민감성</div><div class="skin-option-desc">자극에 민감한 피부</div></div>
+    </button>
+    <button class="skin-option" onclick="selectSkin('normal','중성','✨')">
+      <span class="skin-option-emoji">✨</span>
+      <div><div class="skin-option-label">중성</div><div class="skin-option-desc">균형잡힌 피부</div></div>
+    </button>
+    <button class="modal-btn" onclick="closeSkinModal()" style="margin-top:8px">닫기</button>
+  </div>
+</div>
+
+<script>
+const GROQ_API_KEY = '여기에_Groq_API_키_입력';
+const DAILY_GOAL = 3;
+const DAYS = ['일','월','화','수','목','금','토'];
+
+const UV_LEVELS = [
+  { max: 2, label: '낮음', color: '#4CAF50', emoji: '😊' },
+  { max: 5, label: '보통', color: '#FFC107', emoji: '😐' },
+  { max: 7, label: '높음', color: '#FF9800', emoji: '😬' },
+  { max: 10, label: '매우 높음', color: '#F44336', emoji: '😰' },
+  { max: 99, label: '위험', color: '#9C27B0', emoji: '🚨' },
+];
+
+const BADGES = [
+  { id: 'first', emoji: '🌟', name: '첫 도포', desc: '처음으로 선크림을 발랐어요!' },
+  { id: 'streak3', emoji: '🔥', name: '3일 연속', desc: '3일 연속 목표 달성!' },
+  { id: 'streak7', emoji: '💪', name: '7일 연속', desc: '7일 연속 목표 달성!' },
+  { id: 'perfect', emoji: '👑', name: '완벽한 하루', desc: '하루 목표를 완벽히 달성!' },
+  { id: 'week1', emoji: '🌅', name: '첫 주 완주', desc: '7일 연속 목표 달성!' },
+  { id: 'streak30', emoji: '🏅', name: '한 달의 기적', desc: '30일 연속 목표 달성!' },
+  { id: 'weekend', emoji: '📆', name: '주말 전사', desc: '주말 연속 3번 목표 달성!' },
+  { id: 'uvwarrior', emoji: '🛡️', name: 'UV 전사', desc: 'UV 7 이상인 날 도포 기록!' },
+  { id: 'uvsummer', emoji: '🌞', name: '여름 대비', desc: 'UV 10 이상인 날 도포 기록!' },
+  { id: 'uvsunny', emoji: '🌤️', name: '맑은 날 지킴이', desc: 'UV 5 이상인 날 5번 도포!' },
+  { id: 'total10', emoji: '💯', name: '10회 달성', desc: '누적 도포 10회!' },
+  { id: 'total50', emoji: '🎯', name: '50회 달성', desc: '누적 도포 50회!' },
+  { id: 'total100', emoji: '🏆', name: '100회 달성', desc: '누적 도포 100회!' },
+  { id: 'morning', emoji: '🌙', name: '아침형 인간', desc: '오전 8시 이전에 도포 기록!' },
+];
+
+// 상태
+let state = loadState();
+let uvIndex = null;
+let uvForecast = [];
+let reapplyTimer = null;
+let lastApplyTime = state.lastApplyTime || null;
+let warningShown = false;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('sunguard_data');
+    return raw ? JSON.parse(raw) : { history: {}, badges: [], skinType: null, totalCount: 0, lastApplyTime: null };
+  } catch { return { history: {}, badges: [], skinType: null, totalCount: 0, lastApplyTime: null }; }
+}
+
+function saveState() {
+  localStorage.setItem('sunguard_data', JSON.stringify(state));
+}
+
+function getToday() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+
+function getUVInfo(uvi) {
+  return UV_LEVELS.find(l => uvi <= l.max) || UV_LEVELS[UV_LEVELS.length-1];
+}
+
+function getUVRec(uvi) {
+  if (uvi < 1) return { spf: 'SPF 15 이하', pa: 'PA+', desc: '자외선이 거의 없어요. 가벼운 선크림으로 충분해요.' };
+  if (uvi < 3) return { spf: 'SPF 15+', pa: 'PA+', desc: '낮은 자외선. 일상적인 보호면 충분해요.' };
+  if (uvi < 6) return { spf: 'SPF 30+', pa: 'PA++', desc: '보통 자외선. 외출 시 꼭 선크림을 바르세요.' };
+  if (uvi < 8) return { spf: 'SPF 50+', pa: 'PA+++', desc: '높은 자외선! 강한 선크림과 재도포가 필요해요.' };
+  return { spf: 'SPF 50+', pa: 'PA++++', desc: '매우 위험한 자외선! 최고 등급 선크림 필수예요.' };
+}
+
+function getLast7Days() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    days.push({ key, label: DAYS[d.getDay()], dayOfWeek: d.getDay() });
+  }
+  return days;
+}
+
+function calculateStreak() {
+  let s = 0;
+  const today = new Date();
+  for (let i = 0; i < 60; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (state.history[key] && state.history[key].count >= DAILY_GOAL) s++;
+    else break;
+  }
+  return s;
+}
+
+async function callGroq(prompt) {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 600 })
+  });
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '분석 실패';
+}
+
+// UV 불러오기
+async function fetchUV() {
+  try {
+    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+    const { latitude, longitude } = pos.coords;
+    const resp = await fetch(`https://currentuvindex.com/api/v1/uvi?latitude=${latitude}&longitude=${longitude}`);
+    const data = await resp.json();
+    if (data.ok) {
+      uvIndex = data.now.uvi;
+      const todayStr = new Date().toISOString().slice(0, 10);
+      uvForecast = (data.forecast || []).filter(f => f.time.startsWith(todayStr)).slice(0, 12);
+      updateUVUI();
+      renderForecast();
+    } else { setUVError(); }
+  } catch { setUVError(); }
+}
+
+function setUVError() {
+  document.getElementById('uv-value').textContent = '위치 권한 필요';
+  document.getElementById('uv-emoji').textContent = '❓';
+}
+
+function updateUVUI() {
+  const info = getUVInfo(uvIndex);
+  const rec = getUVRec(uvIndex);
+  document.getElementById('uv-emoji').textContent = info.emoji;
+  document.getElementById('uv-value').textContent = `UV ${uvIndex.toFixed(1)}`;
+  document.getElementById('uv-label').textContent = info.label;
+  document.getElementById('uv-label').style.color = info.color;
+  document.getElementById('uv-rec-short').textContent = `${rec.spf} / ${rec.pa} 권장`;
+  document.getElementById('uv-rec-spf').textContent = `${rec.spf} / ${rec.pa}`;
+  document.getElementById('uv-rec-desc').textContent = rec.desc;
+  const card = document.querySelector('.card.highlighted');
+  if (card) card.style.borderColor = info.color;
+}
+
+function renderForecast() {
+  const container = document.getElementById('forecast-chart');
+  if (!uvForecast.length) {
+    container.innerHTML = '<div style="color:var(--text3);font-size:13px;width:100%;text-align:center">시간대별 데이터가 없어요</div>';
+    return;
+  }
+  const maxUV = Math.max(...uvForecast.map(f => f.uvi), 1);
+  const nowH = new Date().getHours();
+  container.innerHTML = uvForecast.map(f => {
+    const hour = new Date(f.time).getHours();
+    const info = getUVInfo(f.uvi);
+    const barH = Math.max((f.uvi / maxUV) * 100, 4);
+    const isNow = hour === nowH;
+    return `<div class="forecast-bar-wrap">
+      <div class="forecast-uv-val">${f.uvi.toFixed(0)}</div>
+      <div class="forecast-bar-bg"><div class="forecast-bar-fill" style="height:${barH}px;background:${info.color}"></div></div>
+      <div class="forecast-hour ${isNow ? 'now' : ''}">${hour}시</div>
+    </div>`;
+  }).join('');
+
+  // 위험 시간대
+  const dangerHours = uvForecast.filter(f => f.uvi >= 6);
+  const warnBox = document.getElementById('warning-time-box');
+  const warnList = document.getElementById('warning-time-list');
+  if (dangerHours.length > 0) {
+    warnBox.style.display = 'block';
+    warnList.innerHTML = dangerHours.map(f => {
+      const hour = new Date(f.time).getHours();
+      const info = getUVInfo(f.uvi);
+      return `<div class="warning-time-item" style="color:${info.color}">${hour}:00 - UV ${f.uvi.toFixed(1)} (${info.label})</div>`;
+    }).join('');
+  } else { warnBox.style.display = 'none'; }
+}
+
+// 도포 처리
+function handleApply() {
+  const today = getToday();
+  if (!state.history[today]) state.history[today] = { count: 0, uv: uvIndex || 0 };
+  state.history[today].count++;
+  state.totalCount = (state.totalCount || 0) + 1;
+  state.lastApplyTime = Date.now();
+  lastApplyTime = state.lastApplyTime;
+  warningShown = false;
+  saveState();
+  checkBadges();
+  updateHomeUI();
+  triggerRipple();
+  if (navigator.vibrate) navigator.vibrate(60);
+}
+
+function triggerRipple() {
+  const r = document.getElementById('ripple');
+  r.classList.remove('animate');
+  void r.offsetWidth;
+  r.classList.add('animate');
+}
+
+function updateHomeUI() {
+  const today = getToday();
+  const count = state.history[today]?.count || 0;
+  const total = state.totalCount || 0;
+  const streak = calculateStreak();
+  const progress = Math.min(count / DAILY_GOAL, 1);
+
+  document.getElementById('count-number').textContent = count;
+  document.getElementById('progress-fill').style.width = `${progress * 100}%`;
+  document.getElementById('progress-fill').style.background = count >= DAILY_GOAL ? '#4CAF50' : 'var(--orange)';
+  document.getElementById('goal-text').style.display = count >= DAILY_GOAL ? 'block' : 'none';
+  document.getElementById('total-count').textContent = total;
+
+  const streakBadge = document.getElementById('streak-badge');
+  if (streak > 0) { streakBadge.style.display = 'block'; streakBadge.textContent = `🔥 ${streak}일`; }
+  else { streakBadge.style.display = 'none'; }
+
+  // 통계 업데이트
+  const last7 = getLast7Days();
+  document.getElementById('stat-achieved').textContent = last7.filter(d => (state.history[d.key]?.count || 0) >= DAILY_GOAL).length;
+  document.getElementById('stat-avg').textContent = Math.round(last7.reduce((s, d) => s + (state.history[d.key]?.count || 0), 0) / 7 * 10) / 10;
+  document.getElementById('stat-streak').textContent = streak;
+
+  renderWeeklyChart();
+  renderAIData();
+}
+
+function renderWeeklyChart() {
+  const last7 = getLast7Days();
+  const today = getToday();
+  const maxCount = Math.max(...last7.map(d => state.history[d.key]?.count || 0), DAILY_GOAL);
+  const container = document.getElementById('weekly-chart');
+  container.innerHTML = last7.map(d => {
+    const count = state.history[d.key]?.count || 0;
+    const h = maxCount > 0 ? (count / maxCount) * 120 : 0;
+    const isToday = d.key === today;
+    const color = count >= DAILY_GOAL ? '#4CAF50' : 'var(--orange)';
+    return `<div class="bar-wrap">
+      <div class="bar-count">${count}</div>
+      <div class="bar-bg"><div class="bar-fill" style="height:${h}px;background:${color}"></div></div>
+      <div class="bar-label ${isToday ? 'today' : ''}">${d.label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAIData() {
+  const last7 = getLast7Days();
+  const today = getToday();
+  document.getElementById('ai-data-box').innerHTML = last7.map(d => {
+    const entry = state.history[d.key];
+    const isToday = d.key === today;
+    return `<div class="ai-data-row">
+      <span class="ai-data-day ${isToday ? 'today' : ''}">${d.label}요일</span>
+      <span class="ai-data-count">${entry ? `${entry.count}회` : '기록 없음'}</span>
+      <span class="ai-data-uv">${entry ? `UV ${entry.uv}` : '-'}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderBadges() {
+  const earned = state.badges || [];
+  document.getElementById('badge-count').textContent = `(${earned.length}/${BADGES.length})`;
+  document.getElementById('badge-grid').innerHTML = BADGES.map(b => {
+    const isEarned = earned.includes(b.id);
+    return `<div class="badge-card ${isEarned ? '' : 'locked'}">
+      <span class="badge-emoji">${b.emoji}</span>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+      ${!isEarned ? '<span class="badge-lock">🔒</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function checkBadges() {
+  const today = getToday();
+  const count = state.history[today]?.count || 0;
+  const total = state.totalCount || 0;
+  const uv = uvIndex || 0;
+  const streak = calculateStreak();
+  const nb = [...(state.badges || [])];
+  let awarded = null;
+
+  const award = (id) => {
+    if (!nb.includes(id)) { nb.push(id); awarded = BADGES.find(b => b.id === id); }
+  };
+
+  if (count >= 1) award('first');
+  if (count >= DAILY_GOAL) award('perfect');
+  if (streak >= 3) award('streak3');
+  if (streak >= 7) { award('streak7'); award('week1'); }
+  if (streak >= 30) award('streak30');
+
+  const weekendDays = Object.keys(state.history).filter(k => {
+    const d = new Date(k);
+    return (d.getDay() === 0 || d.getDay() === 6) && state.history[k].count >= DAILY_GOAL;
+  });
+  if (weekendDays.length >= 3) award('weekend');
+  if (uv >= 7 && count >= 1) award('uvwarrior');
+  if (uv >= 10 && count >= 1) award('uvsummer');
+  const sunnyDays = Object.values(state.history).filter(d => d.uv >= 5 && d.count >= 5).length;
+  if (sunnyDays >= 1) award('uvsunny');
+  if (total >= 10) award('total10');
+  if (total >= 50) award('total50');
+  if (total >= 100) award('total100');
+  if (new Date().getHours() < 8) award('morning');
+
+  state.badges = nb;
+  saveState();
+  renderBadges();
+
+  if (awarded) showBadgeModal(awarded);
+}
+
+function showBadgeModal(badge) {
+  document.getElementById('badge-modal-emoji').textContent = badge.emoji;
+  document.getElementById('badge-modal-name').textContent = badge.name;
+  document.getElementById('badge-modal-desc').textContent = badge.desc;
+  document.getElementById('badge-modal').classList.add('visible');
+}
+function closeBadgeModal() { document.getElementById('badge-modal').classList.remove('visible'); }
+
+// 피부 타입
+function openSkinModal() { document.getElementById('skin-modal').classList.add('visible'); }
+function closeSkinModal() { document.getElementById('skin-modal').classList.remove('visible'); }
+
+async function selectSkin(id, label, emoji) {
+  state.skinType = id;
+  saveState();
+  closeSkinModal();
+  document.getElementById('skin-emoji').textContent = emoji;
+  document.getElementById('skin-title').textContent = `${label} 피부`;
+  document.getElementById('skin-sub').textContent = '탭해서 변경하기';
+
+  const box = document.getElementById('skin-recommend');
+  box.classList.add('visible');
+  box.textContent = '🤖 AI가 분석 중...';
+
+  try {
+    const uvInfo = uvIndex !== null ? getUVInfo(uvIndex) : null;
+    const prompt = `나는 ${label} 피부 타입이야. 현재 자외선 지수는 ${uvIndex?.toFixed(1) || '알 수 없음'}(${uvInfo?.label || ''})이야. 내 피부 타입과 현재 자외선 지수를 고려해서 어떤 선크림을 써야 하는지 추천해줘. SPF, PA 등급, 제형(예: 로션, 스프레이, 스틱), 주의사항을 포함해서 한국어로 3~4문장으로 친근하게 알려줘. 이모지도 써줘.`;
+    const result = await callGroq(prompt);
+    box.textContent = result;
+  } catch { box.textContent = '추천 정보를 불러올 수 없어요.'; }
+}
+
+// 재도포 타이머
+setInterval(() => {
+  if (!lastApplyTime) return;
+  const elapsed = (Date.now() - lastApplyTime) / 1000 / 60;
+  const statusBox = document.getElementById('status-box');
+  if (elapsed >= 120) {
+    if (!warningShown) { warningShown = true; if (navigator.vibrate) navigator.vibrate([0,500,200,500]); }
+    statusBox.textContent = '⚠️ 선크림을 다시 발라주세요!';
+    statusBox.classList.add('warning');
+  } else {
+    statusBox.textContent = `마지막 도포: ${Math.floor(elapsed)}분 전`;
+    statusBox.classList.remove('warning');
+  }
+}, 10000);
+
+// AI 리포트
+async function fetchDailyReport() {
+  const btn = document.getElementById('daily-report-btn');
+  const box = document.getElementById('daily-report-box');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>AI 분석 중...';
+  box.classList.remove('visible');
+
+  try {
+    const today = getToday();
+    const count = state.history[today]?.count || 0;
+    const streak = calculateStreak();
+    const skinLabels = { oily:'지성', dry:'건성', combo:'복합성', sensitive:'민감성', normal:'중성' };
+    const skinLabel = skinLabels[state.skinType] || '미설정';
+    const rec = getUVRec(uvIndex || 0);
+    const uvInfo = getUVInfo(uvIndex || 0);
+    const peakHours = uvForecast.filter(f => f.uvi >= 6).map(f => {
+      const h = new Date(f.time).getHours();
+      return `${h}시 (UV ${f.uvi.toFixed(1)})`;
+    }).join(', ');
+
+    const prompt = `오늘의 선크림 사용 데이터를 분석해서 하루 총평을 해줘.
+
+- 피부 타입: ${skinLabel}
+- 현재 UV 지수: ${uvIndex?.toFixed(1) || 0} (${uvInfo.label})
+- 오늘 UV 위험 시간대: ${peakHours || '없음'}
+- 권장 선크림: ${rec.spf}, ${rec.pa}
+- 오늘 도포 횟수: ${count}회 (목표: ${DAILY_GOAL}회)
+- 연속 달성일: ${streak}일
+
+위 정보를 바탕으로:
+1. 오늘 피부 보호 점수 (100점 만점)
+2. UV 위험 시간대 주의사항
+3. 피부 타입에 맞는 선크림 조언
+4. 전반적인 오늘 하루 총평
+
+한국어로 친근하게, 이모지 포함해서 5~6문장으로 알려줘.`;
+
+    const result = await callGroq(prompt);
+    box.textContent = result;
+    box.classList.add('visible');
+  } catch {
+    box.textContent = 'AI 분석 중 오류가 발생했어요. 다시 시도해주세요.';
+    box.classList.add('visible');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🤖 오늘 하루 AI 리포트';
+}
+
+async function fetchWeeklyReport() {
+  const btn = document.getElementById('ai-btn');
+  const box = document.getElementById('ai-report-box');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>분석 중...';
+  box.classList.remove('visible');
+
+  try {
+    const last7 = getLast7Days();
+    const summary = last7.map(d => {
+      const entry = state.history[d.key];
+      return `${d.label}요일: ${entry ? entry.count : 0}회 도포, UV ${entry ? entry.uv : '-'}`;
+    }).join('\n');
+    const result = await callGroq(`다음은 사용자의 최근 7일간 선크림 도포 기록이야. 하루 목표는 ${DAILY_GOAL}회야.\n\n${summary}\n\n이 데이터를 분석해서 한국어로 친근하게 피부 보호 점수(100점 만점), 패턴 분석, 개선 조언을 3~4문장으로 짧게 알려줘. 이모지도 적절히 써줘.`);
+    box.textContent = result;
+    box.classList.add('visible');
+  } catch {
+    box.textContent = 'AI 분석 중 오류가 발생했어요.';
+    box.classList.add('visible');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '주간 AI 분석 시작 🤖';
+}
+
+// 탭 전환
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// 날짜 표시
+function updateDate() {
+  const now = new Date();
+  document.getElementById('today-date').textContent = `${now.getMonth()+1}월 ${now.getDate()}일`;
+}
+
+// 피부 타입 복원
+function restoreSkinType() {
+  const skinMap = { oily:['💧','지성'], dry:['🌵','건성'], combo:['⚖️','복합성'], sensitive:['🌸','민감성'], normal:['✨','중성'] };
+  if (state.skinType && skinMap[state.skinType]) {
+    const [emoji, label] = skinMap[state.skinType];
+    document.getElementById('skin-emoji').textContent = emoji;
+    document.getElementById('skin-title').textContent = `${label} 피부`;
+    document.getElementById('skin-sub').textContent = '탭해서 변경하기';
+  }
+}
+
+// 초기화
+updateDate();
+restoreSkinType();
+updateHomeUI();
+renderBadges();
+fetchUV();
+</script>
+</body>
+</html>
